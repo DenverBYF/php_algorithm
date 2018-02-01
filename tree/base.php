@@ -82,22 +82,5 @@ class sort
 
 
 
-$g = new node(4, null, null);
-$h = new node(7, null, null);
-$d = new node(3, $g, null);
-$e = new node(5, $h, null);
-$b = new node(1, $d, $e);
-$f = new node(6, null, null);
-$c = new node(2, $f, null);
-$a = new node(0, $b, $c);
-
-$sort = new sort($a);
-echo "先序遍历: ";
-$sort->sort1();
-echo "<br> 中序遍历: ";
-$sort->sort2();
-echo "<br> 后序遍历: ";
-$sort->sort3();
-
 
 
