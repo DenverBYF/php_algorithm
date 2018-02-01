@@ -5,6 +5,9 @@
 *右子树节点值大于根节点
 */
 
+ini_set("display_errors", "On");
+error_reporting(E_ALL | E_STRICT);
+
 require_once('base.php');
 
 /**
@@ -51,8 +54,8 @@ class binarySearchTree
 			} else {
 				$tmpNode = $tmpNode->left;
 			}
-			return false;
 		}
+		return false;
 	}
 
 	//插入
@@ -126,10 +129,9 @@ class binarySearchTree
 				while (!empty($leftNode->left)) {
 					$leftNode = $leftNode->left;		//找出右子树的最做节点
 				}
-				$tmpNode = $node;
-				$node = $leftNode;
-				$leftNode = $tmpNode;			//交换
-				$this->delete($node);			//重新删除，此时删除节点为叶子节点
+				$tmpValue = $leftNode->value;
+				$this->delete($tmpValue);	//删除掉需删除节点的右子树的最左节点
+				$node->value = $tmpValue;	//将原需删除节点的值修改为其右子树最左节点的值
 			} else {							//左右子树有一个不为空
 				$preNode = $this->findPreNode($node);	//将其前驱节点原本指向其的指针指向其子节点
 				if (empty($preNode)) {
@@ -147,7 +149,5 @@ class binarySearchTree
 		}
 	}
 }
-
-
 
 
