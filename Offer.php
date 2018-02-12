@@ -136,6 +136,20 @@ function mypop()
 function minNumberInRotateArray($rotateArray)
 {
 	// write code here
+	$low = 0;
+	$high = count($rotateArray) - 1;
+	while ($low < $high) {
+		$mid = intval(($low + $high) / 2);
+		if ($high - $low == 1) {
+			return $rotateArray[$high];
+		}
+		if ($rotateArray[$mid] >= $rotateArray[$low]) {
+			$low = $mid;
+		} elseif ($rotateArray[$mid] <= $rotateArray[$high]) {
+			$high = $mid;
+		}
+	}
+	return 0;
 }
 
 
@@ -227,4 +241,125 @@ function NumberOf1($n)
 		$n = $n & ($n-1);
 	}
 	return $count;
+}
+
+
+/*
+ * 给定一个double类型的浮点数base和int类型的整数exponent。求base的exponent次方。
+ * */
+function Power($base, $exponent)
+{
+	// write code here
+	return pow($base, $exponent);
+}
+
+
+/*
+ * 输入一个整数数组，实现一个函数来调整该数组中数字的顺序，
+ * 使得所有的奇数位于数组的前半部分，所有的偶数位于位于数组的后半部分，
+ * 并保证奇数和奇数，偶数和偶数之间的相对位置不变。
+ * */
+function reOrderArray($array)
+{
+	// write code here
+	$a1 = [];
+	$a2 = [];
+	foreach ($array as $item) {
+		if ($item % 2 == 0) {
+			$a1[] = $item;
+		} else {
+			$a2[] = $item;
+		}
+	}
+	return array_merge($a2, $a1);
+}
+
+
+/*
+ * 输入一个链表，输出该链表中倒数第k个结点。
+ * 注:两个指针进行遍历,第一个到达k时,第二个开始。
+ * */
+/*class ListNode{
+    var $val;
+    var $next = NULL;
+    function __construct($x){
+        $this->val = $x;
+    }
+}*/
+function FindKthToTail($head, $k)
+{
+	// write code here
+	if ($k == 0) {
+		return [];
+	}
+	$c = 0;
+	$node1 = $head;
+	$node2 = $head;
+	while (!empty($node1->next)) {
+		$c += 1;
+		$node1 = $node1->next;
+		if ($c >= $k) {
+			$node2 = $node2->next;
+		}
+	}
+	if ($k > $c + 1) {
+		return [];
+	}
+	return $node2;
+}
+
+
+/*
+ * 输入一个链表，反转链表后，输出链表的所有元素。
+ * */
+/*class ListNode{
+    var $val;
+    var $next = NULL;
+    function __construct($x){
+        $this->val = $x;
+    }
+}*/
+function ReverseList($pHead)
+{
+	// write code here
+	$pre = null;
+	$next = null;
+	$node = $pHead;
+	while (!empty($node)) {
+		$next = $node->next;
+		$node->next = $pre;
+		$pre = $node;
+		$node = $next;
+	}
+	return $pre;
+}
+
+
+/*
+ * 输入两个单调递增的链表，输出两个链表合成后的链表，当然我们需要合成后的链表满足单调不减规则。
+ * */
+/*class ListNode{
+    var $val;
+    var $next = NULL;
+    function __construct($x){
+        $this->val = $x;
+    }
+}*/
+function Merge($pHead1, $pHead2)
+{
+	// write code here
+	if (empty($pHead1)) {
+		return $pHead2;
+	}
+	if (empty($pHead2)) {
+		return $pHead1;
+	}
+	if ($pHead1->val < $pHead2->val) {
+		$head = $pHead1;
+		$head->next = Merge($pHead1->next, $pHead2);
+	} else {
+		$head = $pHead2;
+		$head->next = Merge($pHead1, $pHead2->next);
+	}
+	return $head;
 }
