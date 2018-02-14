@@ -363,3 +363,261 @@ function Merge($pHead1, $pHead2)
 	}
 	return $head;
 }
+
+
+/*
+ * 输入两棵二叉树A，B，判断B是不是A的子结构。（ps：我们约定空树不是任意一个树的子结构）
+ * */
+/*class TreeNode{
+    var $val;
+    var $left = NULL;
+    var $right = NULL;
+    function __construct($val){
+        $this->val = $val;
+    }
+}*/
+function HasSubtree($pRoot1, $pRoot2)
+{
+	// write code here
+	if (empty($pRoot2) or empty($pRoot1)) {
+		return false;
+	}
+	return (judge($pRoot1, $pRoot2) or judge($pRoot1->left, $pRoot2) or judge($pRoot1->right, $pRoot2));
+}
+function judge($pRoot1, $pRoot2)
+{
+	if (empty($pRoot2)) {
+		return true;
+	}
+	if (empty($pRoot1)) {
+		return false;
+	}
+	if ($pRoot1->val !== $pRoot2->val) {
+		return false;
+	}
+	return (judge($pRoot1->left, $pRoot2->left) and judge($pRoot1->right, $pRoot2->right));
+}
+
+
+/*
+ * 操作给定的二叉树，将其变换为源二叉树的镜像
+ * */
+/*class TreeNode{
+    var $val;
+    var $left = NULL;
+    var $right = NULL;
+    function __construct($val){
+        $this->val = $val;
+    }
+}*/
+function Mirror(&$root)
+{
+	// write code here
+	$stack = [];
+	$stack[] = $root;
+	while (!empty($stack)) {
+		$node = array_pop($stack);
+		$tmp = $node->left;
+		$node->left = $node->right;
+		$node->right = $tmp;
+		if (!empty($node->left)) {
+			$stack[] = $node->left;
+		}
+		if (!empty($node->right)) {
+			$stack[] = $node->right;
+		}
+	}
+}
+
+
+/*
+ * 输入一个矩阵，按照从外向里以顺时针的顺序依次打印出每一个数字，
+ * 例如，如果输入如下矩阵： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
+ * 则依次打印出数字1,2,3,4,8,12,16,15,14,13,9,5,6,7,11,10.
+ * */
+function printMatrix($matrix)
+{
+	// write code here
+	$row = count($matrix);
+	$column = count($matrix[0]);
+	$lu = 0;
+	$ru = $column - 1;
+	$ld = 0;
+	$rd = $row - 1;
+	$ret = [];
+	while (($lu < $ru) && ($ld < $rd)) {
+		for ($i = $lu; $i < $ru; $i++) {
+			$ret[] = $matrix[$lu][$i];
+		}
+		for ($i = $lu; $i < $rd; $i++) {
+			$ret[] = $matrix[$i][$ru];
+		}
+		for ($i = $ru; $i > $lu; $i--) {
+			$ret[] = $matrix[$rd][$i];
+		}
+		for ($i = $rd; $i > $lu; $i--) {
+			$ret[] = $matrix[$i][$lu];
+		}
+		$lu++;
+		$ru--;
+		$rd--;
+		$ld++;
+	}
+	if ($lu == $ru and $ld < $rd) {        //剩一列
+		for ($i = $lu; $i <= $rd; $i++) {
+			$ret[] = $matrix[$i][$lu];
+		}
+	}
+	if ($lu < $ru and $rd == $ld) {        //剩一行
+		for ($i = $lu; $i <= $ru; $i++) {
+			$ret[] = $matrix[$lu][$i];
+		}
+	}
+
+	if ($lu == $ru and $rd == $ld ){
+		$ret[] = $matrix[$lu][$ld];
+	}
+	return $ret;
+}
+
+
+/*
+ * 定义栈的数据结构，请在该类型中实现一个能够得到栈最小元素的min函数。
+ * */
+$stack = [];
+function mypush2($node)
+{
+	global $stack;
+	// write code here
+	array_push($stack, $node);
+}
+function mypop2()
+{
+	global $stack;
+	// write code here
+	return array_pop($stack);
+}
+function mytop()
+{
+	global $stack;
+	// write code here
+	return $stack[count($stack) - 1];
+}
+function mymin()
+{
+	global $stack;
+	// write code here
+	return min($stack);
+}
+
+
+
+/*
+ * 输入两个整数序列，第一个序列表示栈的压入顺序，请判断第二个序列是否为该栈的弹出顺序。
+ * 假设压入栈的所有数字均不相等。例如序列1,2,3,4,5是某栈的压入顺序，序列4，5,3,2,1是该压栈序列对应的一个弹出序列，
+ * 但4,3,5,1,2就不可能是该压栈序列的弹出序列。（注意：这两个序列的长度是相等的）
+ * */
+$stack = [];
+function IsPopOrder($pushV, $popV)
+{
+	// write code here
+	global $stack;
+	for ($i = 0; $i < count($popV); $i++) {
+		while (myTop3() != $popV[$i] || empty($stack)) {
+			if (empty($pushV)) {
+				return false;
+			}
+			$node = array_shift($pushV);
+			myPush3($node);
+		}
+		myPop3();
+	}
+	return true;
+}
+function myPush3($node)
+{
+	global $stack;
+	array_push($stack, $node);
+}
+function myPop3()
+{
+	global $stack;
+	array_pop($stack);
+}
+function myTop3()
+{
+	global $stack;
+	if (empty($stack)) {
+		return false;
+	}
+	return $stack[count($stack) - 1];
+}
+
+
+/*
+ * 从上往下打印出二叉树的每个节点，同层节点从左至右打印。
+ * */
+/*class TreeNode{
+    var $val;
+    var $left = NULL;
+    var $right = NULL;
+    function __construct($val){
+        $this->val = $val;
+    }
+}*/
+function PrintFromTopToBottom($root)
+{
+	// write code here
+	$stack = [];    //利用队列进行层序遍历
+	$stack[] = $root;
+	$ret = [];
+	while (!empty($stack)) {
+		$node = array_shift($stack);
+		$ret[] = $node->val;
+		if (!empty($node->left)) {
+			$stack[] = $node->left;
+		}
+		if (!empty($node->right)) {
+			$stack[] = $node->right;
+		}
+	}
+	return $ret;
+}
+
+
+/*
+ * 输入一个整数数组，判断该数组是不是某二叉搜索树的后序遍历的结果。
+ * 如果是则输出Yes,否则输出No。假设输入的数组的任意两个数字都互不相同。
+ * */
+function VerifySquenceOfBST($sequence)
+{
+	// write code here
+	return judge($sequence, 0, count($sequence) - 1);
+}
+function judge($root, $start, $end)
+{
+	$count = 0;
+	if ($end - $start <= 1) {
+		return true;
+	}
+	for ($i = 0; $i < $end; $i ++) {
+		$count += 1;
+		if ($root[$i] > $root[$end]) {
+			break;
+		}
+	}
+	for ($j = $count; $j < $end; $j ++) {
+		if ($root[$j] < $root[$end]) {
+			return false;
+		}
+	}
+	if ($count === 0 ) {
+		$left = true;
+	} elseif ($count === $end - 1) {
+		$right = true;
+	} else {
+		$left = judge($root, $start, $count - 1);
+		$right = judge($root, $count, $end - 1);
+	}
+	return ($left&&$right);
+}
