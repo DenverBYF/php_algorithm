@@ -592,32 +592,94 @@ function PrintFromTopToBottom($root)
 function VerifySquenceOfBST($sequence)
 {
 	// write code here
-	return judge($sequence, 0, count($sequence) - 1);
+	if (empty($sequence)) {
+		return false;
+	}
+	return judge1($sequence, 0, count($sequence) - 1);
 }
-function judge($root, $start, $end)
+function judge1($root, $start, $end)
 {
 	$count = 0;
 	if ($end - $start <= 1) {
 		return true;
 	}
 	for ($i = 0; $i < $end; $i ++) {
-		$count += 1;
 		if ($root[$i] > $root[$end]) {
 			break;
 		}
+		$count += 1;
 	}
 	for ($j = $count; $j < $end; $j ++) {
 		if ($root[$j] < $root[$end]) {
 			return false;
 		}
 	}
-	if ($count === 0 ) {
-		$left = true;
-	} elseif ($count === $end - 1) {
-		$right = true;
-	} else {
-		$left = judge($root, $start, $count - 1);
-		$right = judge($root, $count, $end - 1);
+	$left = true;
+	$right = true;
+	if ($count > 0){
+		$left = judge1($root, $start, $count - 1);
 	}
-	return ($left&&$right);
+	if ($count < count($root) - 1) {
+		$right = judge1($root, $count, $end - 1);
+	}
+	return ($left && $right);
+}
+
+
+/*
+ * 输入一颗二叉树和一个整数，打印出二叉树中结点值的和为输入整数的所有路径。
+ * 路径定义为从树的根结点开始往下一直到叶结点所经过的结点形成一条路径。
+ * */
+/*class TreeNode{
+    var $val;
+    var $left = NULL;
+    var $right = NULL;
+    function __construct($val){
+        $this->val = $val;
+    }
+}
+$path = [];
+$stack = [];
+$num = 0;*/
+function FindPath($root, $expectNumber)
+{
+	global $num, $stack, $path;
+	$judge = function ($root) {
+		return (empty($root->left) and empty($root->right));
+	};
+	if (empty($root)) {
+		return $path;
+	}
+	$stack[] = $root->val;
+	$num += $root->val;
+	if ($num === $expectNumber and $judge($root)) {
+		$tmp = [];
+		foreach ($stack as $eachRoot) {
+			$tmp[] = $eachRoot;
+		}
+		$path[] = $tmp;
+	}
+	if ($num < $expectNumber and !(empty($root->left))) {
+		FindPath($root->left, $expectNumber);
+	}
+	if ($num < $expectNumber and !(empty($root->right))) {
+		FindPath($root->right, $expectNumber);
+	}
+	$num -= $root->val;
+	array_pop($stack);
+	return $path;
+}
+
+
+/*
+ * 输入n个整数，找出其中最小的K个数。例如输入4,5,1,6,2,7,3,8这8个数字，则最小的4个数字是1,2,3,4,。
+ * */
+function GetLeastNumbers_Solution($input, $k)
+{
+	// write code here
+	if ($k > count($input)) {
+		return [];
+	}
+	sort($input);
+	return array_slice($input,0 , $k);
 }
