@@ -683,3 +683,239 @@ function GetLeastNumbers_Solution($input, $k)
 	sort($input);
 	return array_slice($input,0 , $k);
 }
+
+
+/*
+ * 数组中有一个数字出现的次数超过数组长度的一半，请找出这个数字。
+ * 例如输入一个长度为9的数组{1,2,3,2,2,2,5,4,2}。由于数字2在数组中出现了5次，超过数组长度的一半，因此输出2。如果不存在则输出0。
+ * */
+function MoreThanHalfNum_Solution($numbers)
+{
+	// write code here
+	$t = intval(count($numbers)/2);
+	$count = array_count_values($numbers);
+	foreach ($count as $key => $value) {
+		if ($value > $t) {
+			return $key;
+		}
+	}
+	return 0;
+}
+
+
+/*
+ * HZ偶尔会拿些专业问题来忽悠那些非计算机专业的同学。今天测试组开完会后,他又发话了:在古老的一维模式识别中,常常需要计算连续子向量的最大和,
+ * 当向量全为正数的时候,问题很好解决。但是,如果向量中包含负数,是否应该包含某个负数,并期望旁边的正数会弥补它呢？
+ * 例如:{6,-3,-2,7,-15,1,2,2},连续子向量的最大和为8(从第0个开始,到第3个为止)。你会不会被他忽悠住？(子向量的长度至少是1)
+ * */
+function FindGreatestSumOfSubArray($array)
+{
+	// write code here
+	$tmp = $array[0];
+	$max = $array[0];
+	for ($i = 1; $i < count($array); $i++) {
+		if ($tmp > 0) {
+			$tmp += $array[$i];
+		} else {
+			$tmp = $array[$i];
+		}
+		if ($tmp > $max) {
+			$max = $tmp;
+		}
+	}
+	return $max;
+}
+
+
+/*
+ * 求出1~13的整数中1出现的次数,并算出100~1300的整数中1出现的次数？
+ * 为此他特别数了一下1~13中包含1的数字有1、10、11、12、13因此共出现6次,
+ * 但是对于后面问题他就没辙了。ACMer希望你们帮帮他,并把问题更加普遍化,可以很快的求出任意非负整数区间中1出现的次数。
+ * */
+function NumberOf1Between1AndN_Solution($n)
+{
+	// write code here
+	$ret = 0;
+	$base = 1;
+	$round = $n;
+	while ($round > 0) {
+		$weight = $round % 10;
+		$round =  intval($round/10);
+		$ret += $round * $base;
+		if ($weight == 1) {
+			$ret += ($n % $base) + 1;
+		} else if ($weight > 1) {
+			$ret += $base;
+		}
+		$base *= 10;
+	}
+	return $ret;
+}
+
+
+/*
+ * 输入一个正整数数组，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。
+ * 例如输入数组{3，32，321}，则打印出这三个数字能排成的最小数字为321323。
+ * */
+function PrintMinNumber($numbers)
+{
+	// write code here
+	for ($i = 0; $i < count($numbers) - 1; $i++) {
+		$flag = true;
+		for ($j = $i + 1; $j < count($numbers); $j++) {
+			if (parpre($numbers[$i], $numbers[$j])) {
+				$flag = false;
+				$tmp = $numbers[$i];
+				$numbers[$i] = $numbers[$j];
+				$numbers[$j] = $tmp;
+			}
+		}
+		if ($flag) {
+			break;
+		}
+	}
+	return implode("", $numbers);
+}
+function parpre($num1, $num2)
+{
+	$n1 = (string)$num1 . (string)$num2;
+	$n2 = (string)$num2 . (string)$num1;
+	return intval($n1) > intval($n2);
+}
+
+
+/*
+ * 把只包含因子2、3和5的数称作丑数（Ugly Number）。例如6、8都是丑数，但14不是，因为它包含因子7。
+ * 习惯上我们把1当做是第一个丑数。求按从小到大的顺序的第N个丑数。
+ * */
+function GetUglyNumber_Solution($index)
+{
+	// write code here
+	$ret = [];
+	$ret[] = 1;
+	if ($index < 1) {
+		return 0;
+	}
+	$j = $k = $l =0;
+	for ($i = 1; $i < $index; $i++) {
+		$ret[$i] = min(min($ret[$j]*2, $ret[$k]*3), $ret[$l]*5);
+		if ($ret[$i] == $ret[$j]*2) {
+			$j +=1;
+		}
+		if ($ret[$i] == $ret[$k]*3) {
+			$k +=1;
+		}
+		if ($ret[$i] == $ret[$l]*5) {
+			$l +=1;
+		}
+	}
+	return $ret[$index - 1];
+}
+
+
+/*
+ * 在一个字符串(1<=字符串长度<=10000，全部由字母组成)中找到第一个只出现一次的字符,并返回它的位置
+ * */
+function FirstNotRepeatingChar($str)
+{
+	// write code here
+	if (strlen($str) == 0) {
+		return -1;
+	}
+	$str = str_split($str);
+	$count = array_count_values($str);
+	foreach ($count as $key => $value) {
+		if ($value == 1) {
+			return array_search($key, $str);
+		}
+	}
+}
+
+
+/*
+ * 输入两个链表，找出它们的第一个公共结点。
+ * */
+/*class ListNode{
+    var $val;
+    var $next = NULL;
+    function __construct($x){
+        $this->val = $x;
+    }
+}*/
+function FindFirstCommonNode($pHead1, $pHead2)
+{
+	// write code here
+	$count1 = $count2 = 0;
+	$p1 = $pHead1;
+	$p2 = $pHead2;
+	while (!empty($pHead1)) {
+		$count1 += 1;
+		$pHead1 = $pHead1->next;
+	}
+	while (!empty($pHead2)) {
+		$count2 += 1;
+		$pHead2 = $pHead2->next;
+	}
+	if ($count1 > $count2) {
+		$t = $count1 - $count2;
+		$pLong = $p1;
+		$pShort = $p2;
+	} else {
+		$t = $count2 - $count1;
+		$pLong = $p2;
+		$pShort = $p1;
+	}
+	for ($i = 0; $i < $t; $i++) {
+		$pLong = $pLong->next;
+	}
+	while (!empty($pLong) and !empty($pShort)) {
+		if ($pLong === $pShort) {
+			return $pLong;
+		}
+		$pLong = $pLong->next;
+		$pShort = $pShort->next;
+	}
+	return false;
+}
+
+
+/*
+ * 统计一个数字在排序数组中出现的次数。
+ * */
+function GetNumberOfK($data, $k)
+{
+	// write code here
+	$data = array_count_values($data);
+	if (!in_array($k, array_keys($data))) {
+		return 0;
+	} else {
+		return $data[$k];
+	}
+}
+
+
+/*
+ * 输入一棵二叉树，求该树的深度。从根结点到叶结点依次经过的结点（含根、叶结点）形成树的一条路径，最长路径的长度为树的深度。
+ * */
+/*class TreeNode{
+    var $val;
+    var $left = NULL;
+    var $right = NULL;
+    function __construct($val){
+        $this->val = $val;
+    }
+}*/
+function TreeDepth($pRoot)
+{
+	// write code here
+	if (empty($pRoot)) {
+		return 0;
+	}
+	$left = TreeDepth($pRoot->left);
+	$right = TreeDepth($pRoot->right);
+	$depth = $left > $right?$left:$right;
+	return 1 + $depth;
+}
+
+
+
