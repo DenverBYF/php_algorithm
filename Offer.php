@@ -918,4 +918,55 @@ function TreeDepth($pRoot)
 }
 
 
+/*
+ * 输入一棵二叉树，判断该二叉树是否是平衡二叉树。
+ * */
+/*class TreeNode{
+    var $val;
+    var $left = NULL;
+    var $right = NULL;
+    function __construct($val){
+        $this->val = $val;
+    }
+}*/
+function IsBalanced_Solution($pRoot)
+{
+	// write code here
+	if (empty($pRoot)) {
+		return true;
+	}
+	$left = depth($pRoot->left);
+	$right = depth($pRoot->right);
+	if (max($left,$right) - min($left,$right) > 1) {
+		return false;
+	}
+	return IsBalanced_Solution($pRoot->left) && IsBalanced_Solution($pRoot->right);
+}
+
+function depth($root)
+{
+	if (empty($root)) {
+		return 0;
+	}
+	$left = depth($root->left);
+	$right = depth($root->right);
+	$depth = $left > $right?$left:$right;
+	return 1 + $depth;
+}
+
+
+/*
+ * 一个整型数组里除了两个数字之外，其他的数字都出现了两次。请写程序找出这两个只出现一次的数字。
+ * */
+function FindNumsAppearOnce($array)
+{
+	// write code here
+	// return list, 比如[a,b]，其中ab是出现一次的两个数字
+	$array = array_count_values($array);
+	asort($array);
+	$key = array_keys($array);
+	return array_slice($key, 0, 2);
+}
+
+
 
