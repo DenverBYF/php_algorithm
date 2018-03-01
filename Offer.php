@@ -517,41 +517,33 @@ function mymin()
  * 假设压入栈的所有数字均不相等。例如序列1,2,3,4,5是某栈的压入顺序，序列4，5,3,2,1是该压栈序列对应的一个弹出序列，
  * 但4,3,5,1,2就不可能是该压栈序列的弹出序列。（注意：这两个序列的长度是相等的）
  * */
-$stack = [];
 function IsPopOrder($pushV, $popV)
 {
 	// write code here
-	global $stack;
-	for ($i = 0; $i < count($popV); $i++) {
-		while (myTop3() != $popV[$i] || empty($stack)) {
-			if (empty($pushV)) {
-				return false;
+	$stack = [];
+	$len = count($pushV);
+	$j = $i = 0;	//$i控制输入栈, $j控制输出栈
+	while ($j < $len) {
+		while (empty($stack) || $stack[count($stack) - 1] != $popV[$j]) {
+			if ($i > $len - 1) {
+				break;
 			}
-			$node = array_shift($pushV);
-			myPush3($node);
+			$stack[] = array_shift($pushV);
+			$i ++;
 		}
-		myPop3();
+		if ($stack[count($stack) - 1] != $popV[$j]) {
+			break;
+		}
+		array_pop($stack);
+		$j ++;
 	}
-	return true;
-}
-function myPush3($node)
-{
-	global $stack;
-	array_push($stack, $node);
-}
-function myPop3()
-{
-	global $stack;
-	array_pop($stack);
-}
-function myTop3()
-{
-	global $stack;
-	if (empty($stack)) {
+	if ($j != $len || !empty($stack)) {
 		return false;
+	} else {
+		return true;
 	}
-	return $stack[count($stack) - 1];
 }
+
 
 
 /*
@@ -630,7 +622,7 @@ function judge1($root, $start, $end)
  * 输入一颗二叉树和一个整数，打印出二叉树中结点值的和为输入整数的所有路径。
  * 路径定义为从树的根结点开始往下一直到叶结点所经过的结点形成一条路径。
  * */
-/*class TreeNode{
+class TreeNode{
     var $val;
     var $left = NULL;
     var $right = NULL;
@@ -638,36 +630,162 @@ function judge1($root, $start, $end)
         $this->val = $val;
     }
 }
-$path = [];
-$stack = [];
-$num = 0;*/
 function FindPath($root, $expectNumber)
 {
-	global $num, $stack, $path;
-	$judge = function ($root) {
-		return (empty($root->left) and empty($root->right));
-	};
-	if (empty($root)) {
-		return $path;
+	if($expectNumber == 0 || empty($root) || $root->val > $expectNumber) {
+		return [];
+	}
+	$stack = [];
+	$pathRet = [];
+	getPath($pathRet, $stack, $root, $expectNumber);
+	return $pathRet;
+}
+function getPath(&$pathRet, &$stack, $root, $expectNumber)
+{
+	if (empty($root->left) && empty($root->right)) {
+		$isLeaf = true;
 	}
 	$stack[] = $root->val;
-	$num += $root->val;
-	if ($num === $expectNumber and $judge($root)) {
-		$tmp = [];
-		foreach ($stack as $eachRoot) {
-			$tmp[] = $eachRoot;
-		}
-		$path[] = $tmp;
+	if ($root->val === $expectNumber && isset($isLeaf)) {
+		$pathRet[] = $stack;
 	}
-	if ($num < $expectNumber and !(empty($root->left))) {
-		FindPath($root->left, $expectNumber);
+	if (!empty($root->left)) {
+		getPath($pathRet, $stack, $root->left, $expectNumber - $root->val);
 	}
-	if ($num < $expectNumber and !(empty($root->right))) {
-		FindPath($root->right, $expectNumber);
+	if (!empty($root->right)) {
+		getPath($pathRet, $stack, $root->right, $expectNumber - $root->val);
 	}
-	$num -= $root->val;
 	array_pop($stack);
-	return $path;
+}
+
+
+/*
+ * 输入一个复杂链表（每个节点中有节点值，以及两个指针，一个指向下一个节点，
+ * 另一个特殊指针指向任意一个节点），返回结果为复制后复杂链表的head。
+ * （注意，输出结果中请不要返回参数中的节点引用，否则判题程序会直接返回空）
+ * */
+class RandomListNode{
+    var $label;
+    var $next = NULL;
+    var $random = NULL;
+    function __construct($x){
+        $this->label = $x;
+    }
+}
+function MyClone($pHead)
+{
+	// write code here
+	if (empty($pHead)) {
+		return null;
+	}
+	$pNode = $pHead;
+	$nextNode = $pNode->next;
+	//复制
+	while (!empty($pNode)) {
+		$tmp = new RandomListNode($pNode->label);
+		$tmp->next = $nextNode;
+		$pNode->next = $tmp;
+		$pNode = $tmp->next;
+		if (!empty($pNode)) {
+			$nextNode = $pNode->next;
+		}
+	}
+	//random指针复制
+	$pNode = $pHead;
+	while (!empty($pNode)) {
+		if (!empty($pNode->random)) {
+			$pNode->next->random = $pNode->random;
+		} else {
+			$pNode->next->random = null;
+		}
+		$pNode = $pNode->next->next;
+	}
+	//拆分
+	$pNode = $pHead;
+	$cloneHead= $pHead->next;
+	$cloneNode = $cloneHead;
+	while (!empty($pNode)) {
+		$pNode->next = $cloneNode->next;
+		$pNode = $pNode->next;
+		if (!empty($pNode)) {
+			$cloneNode->next = $pNode->next;
+			$cloneNode = $cloneNode->next;
+		}
+	}
+	return $cloneHead;
+}
+
+
+/*
+ * 输入一棵二叉搜索树，将该二叉搜索树转换成一个排序的双向链表。要求不能创建任何新的结点，只能调整树中结点指针的指向。
+ * */
+/*class TreeNode{
+    var $val;
+    var $left = NULL;
+    var $right = NULL;
+    function __construct($val){
+        $this->val = $val;
+    }
+}*/
+function Convert($pRootOfTree)
+{
+	// write code here
+	$headNode = convertNode($pRootOfTree, null);
+	while (!empty($headNode) && !empty($headNode->left)) {
+		$headNode = $headNode->left;
+	}
+	return $headNode;
+}
+function convertNode($root, $lastNode)
+{
+	if (empty($root)) return null;
+	if (!empty($root->left)) {
+		$lastNode = convertNode($root->left, $lastNode);
+	}
+	$root->left = $lastNode;
+	if (!empty($lastNode)) {
+		$lastNode->right = $root;
+	}
+	$lastNode = $root;
+	if (!empty($root->right)) {
+		$lastNode = convertNode($root->right, $lastNode);
+	}
+	return $lastNode;
+}
+
+
+/*
+ * 输入一个字符串,按字典序打印出该字符串中字符的所有排列。
+ * 例如输入字符串abc,则打印出由字符a,b,c所能排列出来的所有字符串abc,acb,bac,bca,cab和cba。
+ * */
+function Permutation($str)
+{
+	// write code here
+	if (empty($str)) {
+		return [];
+	}
+	$ret = [];
+	$len = count($str);
+	getPermutation($ret, $str, 0, $len);
+	return $ret;
+
+}
+function getPermutation(&$ret, $str, $index, $len)
+{
+	if ($len == $index) {
+		$ret[] = $str;
+        return ;
+	}
+	for ($i = $index; $i < $len; ++ $i) {
+		if ($i != $index && $str[$i] == $str[$index]) continue;
+		$tmp = $str[$i];
+		$str[$i] = $str[$index];
+		$str[$index] = $tmp;
+		getPermutation($ret, $str, $index + 1, $len);
+        $tmp = $str[$i];
+		$str[$i] = $str[$index];
+		$str[$index] = $tmp;
+	}
 }
 
 
